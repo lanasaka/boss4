@@ -36,7 +36,7 @@ const Login = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:5002/api/users/subset', {
+      const response = await fetch('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/users/subset', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
