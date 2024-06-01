@@ -35,7 +35,7 @@ const ShowUsers = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await fetch('http://localhost:5002/api/users');
+      const response = await fetch('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/users');
       if (response.ok) {
         const usersData = await response.json();
         setUsers(usersData);
@@ -71,7 +71,7 @@ const ShowUsers = () => {
   const handleDeleteConfirm = async () => {
     if (userToDelete) {
       try {
-        const response = await fetch(`http://localhost:5002/api/users/${userToDelete.id}`, {
+        const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/users/${userToDelete.id}`, {
           method: 'DELETE',
         });
 

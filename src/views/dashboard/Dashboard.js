@@ -18,7 +18,7 @@ const Dashboard = () => {
         if (!userId) {
           throw new Error('User ID not found');
         }
-        const response = await fetch(`http://localhost:5002/api/applications?userId=${userId}`);
+        const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications?userId=${userId}`);
         const data = await response.json();
         setApplications(data);
       } catch (error) {

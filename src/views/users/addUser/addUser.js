@@ -50,7 +50,7 @@ const AddUser = () => {
       formDataObj.append('company', formData.company);
       formDataObj.append('logo', logoFile);
       
-      const response = await fetch('http://localhost:5002/api/users', {
+      const response = await fetch('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/users', {
         method: 'POST',
         body: formDataObj
       });
@@ -65,7 +65,7 @@ const AddUser = () => {
           company: ''
         });
         // Fetch the updated users list after adding a user
-        const usersResponse = await fetch('http://localhost:5002/api/users');
+        const usersResponse = await fetch('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/users');
         const usersData = await usersResponse.json();
         navigate('/users/showUsers', { state: { users: usersData } }); // Pass the updated users list
       } else {
