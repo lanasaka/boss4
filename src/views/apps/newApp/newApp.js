@@ -118,16 +118,19 @@ const NewApp = () => {
       } else if (academicDegree === 'phd') {
         programEndpoint = 'phd_programs';
       }
-  
       Axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/universities/${universityId}/${programEndpoint}`)
-        .then(response => {
-          setPrograms(response.data);
-        })
-        .catch(error => {
-          console.error('Error fetching programs:', error);
-        });
-    };
-  
+      .then(response => {
+        // Modify the structure of the programs data to include both id and name
+        const modifiedPrograms = response.data.map(program => ({
+          id: program.id,
+          name: program.name
+        }));
+        setPrograms(modifiedPrograms);
+      })
+      .catch(error => {
+        console.error('Error fetching programs:', error);
+      });
+  };
     const handleUniversityChange = (e) => {
       const universityId = e.target.value;
       const selectedUniversity = universities.find(university => university.id === parseInt(universityId));
@@ -142,9 +145,13 @@ const NewApp = () => {
   
     const handleInputChange = (e) => {
       const { name, value } = e.target;
+      // Find the program object based on its ID
+      const selectedProgram = programs.find(program => program.id === parseInt(value));
+      // Store the program name instead of its ID
+      const programName = selectedProgram ? selectedProgram.name : '';
       setFormData({
         ...formData,
-        [name]: value
+        [name]: programName // Save the name of the selected program
       });
     };
   
