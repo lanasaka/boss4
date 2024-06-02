@@ -35,7 +35,7 @@ const ApplicationDetails = () => {
     const [offerLetterName, setOfferLetterName] = useState('');
     const [acceptanceLetterName, setAcceptanceLetterName] = useState('');
     const [receiptName, setReceiptName] = useState('');
-
+    const [selectedType, setSelectedType] = useState('');
     const [offerLetterUrl, setOfferLetterUrl] = useState('');
 const [acceptanceLetterUrl, setAcceptanceLetterUrl] = useState('');
 const [receiptUrl, setReceiptUrl] = useState('');
@@ -79,6 +79,7 @@ const [receiptUrl, setReceiptUrl] = useState('');
         setName(data.name || '');
         setPassportNumber(data.passportNumber || '');
         setEmail(data.email || ''); 
+        setSelectedType(data.type); // Set the initial application type
         setPhoneNumber(data.phoneNumber || ''); 
         setNationality(data.nationality || ''); 
         setCountryResidence(data.countryResidence || ''); 
@@ -193,28 +194,47 @@ const [receiptUrl, setReceiptUrl] = useState('');
   };
 
   const handleSave = async () => {
-    const formData = new FormData();
-    if (offerLetter) formData.append('offerLetter', offerLetter);
-    if (acceptanceLetter) formData.append('acceptanceLetter', acceptanceLetter);
-    if (receipt) formData.append('receipt', receipt);
-
+    const payload = {
+      name: Name,
+      passportNumber: PassportNumber,
+      email: email,
+      phoneNumber: phoneNumber,
+      nationality: nationality,
+      countryResidence: countryResidence,
+      type: selectedType,
+      academicDegree: academicDegree,
+      semester: semester,
+      extraFileName: extraFileName,
+      type:type,
+    };
+  
     try {
-      const response = await axios.put(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications/${appId}/documents`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      console.log(response.data);
-      setSuccess(true);
-      toast.success('Documents uploaded successfully');
+      await axios.put(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications/${appId}`, payload);
+      toast.success('Application updated successfully');
     } catch (error) {
       console.error('Error:', error);
-      setError('Failed to upload documents');
-      setSuccess(false);
-      toast.error('Failed to upload documents');
+      toast.error('Failed to update application');
+    }
+  
+    // Upload documents if necessary
+    if (isOfferLetterUploaded || isAcceptanceLetterUploaded || isReceiptUploaded) {
+      const formData = new FormData();
+      if (offerLetter) formData.append('offerLetter', offerLetter);
+      if (acceptanceLetter) formData.append('acceptanceLetter', acceptanceLetter);
+      if (receipt) formData.append('receipt', receipt);
+  
+      try {
+        await axios.put(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications/${appId}/documents`, formData);
+        setSuccess(true);
+        setError(null);
+      } catch (error) {
+        console.error('Error:', error);
+        setError('Failed to save documents');
+        setSuccess(false);
+      }
     }
   };
-
+  
   const downloadDocument = async (documentName) => {
     if (documentName && documentName !== 'null') {
       try {
@@ -479,7 +499,7 @@ const [receiptUrl, setReceiptUrl] = useState('');
     <FormGroup>
                   <Label for="offerLetter">Offer Letter</Label>
                   <div className="d-flex align-items-center">
-                    <Input type="file" id="offerLetter" onChange={(e) => handleFileChange(e, 'offerLetter')} />
+                    
                     <div style={{ marginLeft: '10px' }}>
                       <Button onClick={() => downloadDocument(application?.offerLetter)}>Download</Button>
                     </div>
@@ -488,7 +508,7 @@ const [receiptUrl, setReceiptUrl] = useState('');
                 <FormGroup>
                   <Label for="acceptanceLetter">Acceptance Letter</Label>
                   <div className="d-flex align-items-center">
-                    <Input type="file" id="acceptanceLetter" onChange={(e) => handleFileChange(e, 'acceptanceLetter')} />
+                    
                     <div style={{ marginLeft: '10px' }}>
                       <Button onClick={() => downloadDocument(application?.acceptanceLetter)}>Download</Button>
                     </div>
@@ -497,7 +517,7 @@ const [receiptUrl, setReceiptUrl] = useState('');
                 <FormGroup>
                   <Label for="receipt">Receipt</Label>
                   <div className="d-flex align-items-center">
-                    <Input type="file" id="receipt" onChange={(e) => handleFileChange(e, 'receipt')} />
+                   
                     <div style={{ marginLeft: '10px' }}>
                       <Button onClick={() => downloadDocument(application?.receipt)}>Download</Button>
                     </div>

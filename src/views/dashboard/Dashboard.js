@@ -41,7 +41,7 @@ const Dashboard = () => {
     };
 
     applications.forEach((app) => {
-      const type = app.type || 'new';
+      const type = app.appType || 'new'; // Assuming appType is the property you want to count
       if (statusCounts.hasOwnProperty(type)) {
         statusCounts[type]++;
       } else {
@@ -56,62 +56,16 @@ const Dashboard = () => {
 
   return (
     <CRow>
-      <CCol sm="6" lg="3">
-        <CCard>
-          <CCardHeader>New</CCardHeader>
-          <CCardBody>
-            <h4>{newCount}</h4>
-          </CCardBody>
-        </CCard>
-      </CCol>
-      <CCol sm="6" lg="3">
-        <CCard>
-          <CCardHeader>Offer</CCardHeader>
-          <CCardBody>
-            <h4>{offerCount}</h4>
-          </CCardBody>
-        </CCard>
-      </CCol>
-      <CCol sm="6" lg="3">
-        <CCard>
-          <CCardHeader>Acceptance</CCardHeader>
-          <CCardBody>
-            <h4>{acceptanceCount}</h4>
-          </CCardBody>
-        </CCard>
-      </CCol>
-      <CCol sm="6" lg="3">
-        <CCard>
-          <CCardHeader>Payment</CCardHeader>
-          <CCardBody>
-            <h4>{paymentCount}</h4>
-          </CCardBody>
-        </CCard>
-      </CCol>
-      <CCol sm="6" lg="3">
-        <CCard>
-          <CCardHeader>Waiting</CCardHeader>
-          <CCardBody>
-            <h4>{waitingCount}</h4>
-          </CCardBody>
-        </CCard>
-      </CCol>
-      <CCol sm="6" lg="3">
-        <CCard>
-          <CCardHeader>Rejected</CCardHeader>
-          <CCardBody>
-            <h4>{rejectedCount}</h4>
-          </CCardBody>
-        </CCard>
-      </CCol>
-      <CCol sm="6" lg="3">
-        <CCard>
-          <CCardHeader>Complete</CCardHeader>
-          <CCardBody>
-            <h4>{completeCount}</h4>
-          </CCardBody>
-        </CCard>
-      </CCol>
+      {Object.entries(countStatuses()).map(([status, count]) => (
+        <CCol sm="6" lg="3" key={status}>
+          <CCard>
+            <CCardHeader>{status.charAt(0).toUpperCase() + status.slice(1)}</CCardHeader>
+            <CCardBody>
+              <h4>{count}</h4>
+            </CCardBody>
+          </CCard>
+        </CCol>
+      ))}
     </CRow>
   );
 };

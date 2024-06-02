@@ -42,6 +42,13 @@ const NewApp = () => {
         [fieldName]: event.target.files[0]
       });
     };
+    const handleTypeChange = (e) => {
+      setFormData({
+        ...formData,
+        type: e.target.value
+      });
+    };
+    
   
     const handleFormSubmit = async () => {
       try {
@@ -91,13 +98,21 @@ const NewApp = () => {
       }
     };
   
+
     useEffect(() => {
       fetchUniversities();
-    }, [formData.academicDegree]);
+    }, [academicDegree]);
+    const handleAcademicDegreeChange = (selectedDegree) => {
+      setFormData({
+        ...formData,
+        academicDegree: selectedDegree
+      });
+    };
+    
   
     const fetchUniversities = () => {
-      if (formData.academicDegree) {
-        Axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/${formData.academicDegree}-universities`)
+      if (academicDegree) {
+        Axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/${academicDegree}-universities`)
           .then(response => {
             setUniversities(response.data);
           })
@@ -118,43 +133,52 @@ const NewApp = () => {
       } else if (academicDegree === 'phd') {
         programEndpoint = 'phd_programs';
       }
+  
       Axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/universities/${universityId}/${programEndpoint}`)
-      .then(response => {
-        // Modify the structure of the programs data to include both id and name
-        const modifiedPrograms = response.data.map(program => ({
-          id: program.id,
-          name: program.name
-        }));
-        setPrograms(modifiedPrograms);
-      })
-      .catch(error => {
-        console.error('Error fetching programs:', error);
-      });
-  };
-    const handleUniversityChange = (e) => {
+        .then(response => {
+          setPrograms(response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching programs:', error);
+        });
+    };
+      const handleUniversityChange = (e) => {
       const universityId = e.target.value;
       const selectedUniversity = universities.find(university => university.id === parseInt(universityId));
       const universityName = selectedUniversity ? selectedUniversity.name : ''; // Get the name of the selected university
-  
+      
       setFormData({
         ...formData,
         university: universityName // Save the name of the selected university
       });
-      fetchPrograms(universityId, formData.academicDegree);
+      fetchPrograms(universityId, academicDegree);
+    };
+    
+    const handleProgramChange = (e) => {
+      const selectedProgramId = e.target.value;
+      const selectedProgram = programs.find(program => program.id === parseInt(selectedProgramId));
+      const programName = selectedProgram ? selectedProgram.name : ''; // Get the name of the selected program
+    
+      setFormData({
+        ...formData,
+        program: programName // Save the name of the selected program
+      });
     };
   
     const handleInputChange = (e) => {
       const { name, value } = e.target;
-      // Find the program object based on its ID
-      const selectedProgram = programs.find(program => program.id === parseInt(value));
-      // Store the program name instead of its ID
-      const programName = selectedProgram ? selectedProgram.name : '';
       setFormData({
         ...formData,
-        [name]: programName // Save the name of the selected program
+        [name]: value
       });
     };
-  
+    const handleInputChange2 = (event) => {
+      const { name, value } = event.target;
+      setFormData({
+        ...formData,
+        [name]: value.toUpperCase() // Convert input to uppercase
+      });
+    };
     const handleSemesterChange = (e) => {
       const selectedSemester = e.target.value;
       setFormData({
@@ -172,14 +196,14 @@ const NewApp = () => {
                 <h4 className="card-title">Personal Information</h4>
                 <Form>
                   <FormGroup>
-                    <Label for="name">Students Name<span style={{ color: 'red' }}>*</span></Label>
+                    <Label for="name">Student First Name + Father Name + Last Name<span style={{ color: 'red' }}>*</span></Label>
                     <Input
                       type="text"
                       id="name"
                       name="name"
                       placeholder="Enter student's name"
                       value={formData.name}
-                      onChange={handleInputChange}
+                      onChange={handleInputChange2}
                     />
                   </FormGroup>
                   <FormGroup>
@@ -247,7 +271,7 @@ const NewApp = () => {
               <CardBody>
                 <h4 className="card-title">Documents</h4>
                 <FormGroup>
-                  <Label for="passportPhoto">Passport Photo</Label>
+                  <Label for="passportPhoto">Passport Photo <span style={{ color: 'red' }}>*</span></Label>
                   <Input
                     type="file"
                     id="passportPhoto"
@@ -279,7 +303,7 @@ const NewApp = () => {
                   />
                 </FormGroup>
                 <FormGroup>
-                  <Label for="highSchoolTranscript">High School Transcript</Label>
+                  <Label for="highSchoolTranscript">High School Transcript <span style={{ color: 'red' }}>*</span></Label>
                   <Input
                     type="file"
                     id="highSchoolTranscript"
@@ -321,38 +345,69 @@ const NewApp = () => {
               <CardBody>
                 <h4 className="card-title">Application Information</h4>
                 <Form>
+                <FormGroup>
+              <Label for="type">Student Type <span style={{ color: 'red' }}>*</span></Label>
+              <Input
+                type="select"
+                id="type"
+                onChange={handleTypeChange}
+                value={formData.type} // Ensure the selected value reflects the state
+              >
+                <option value="">Select Student type</option>
+                <option value="newStudent">New Student</option>
+                <option value="transferStudent">Transfer Student</option>
+              </Input>
+            </FormGroup>
+
+                <FormGroup>
+            <Label for="academicDegree">Academic Degree <span style={{ color: 'red' }}>*</span></Label>
+            <Input
+              type="select"
+              id="academicDegree"
+              value={academicDegree}
+              onChange={(e) => {
+                setAcademicDegree(e.target.value);
+                handleAcademicDegreeChange(e.target.value);
+              }}
+            >
+              <option value="">Select Academic Degree</option>
+              <option value="diploma">Diploma</option>
+              <option value="bachelor">Bachelor</option>
+              <option value="master">Master</option>
+              <option value="phd">PhD</option>
+            </Input>
+          </FormGroup>
                   <FormGroup>
-                    <Label for="academicDegree">Academic Degree <span style={{ color: 'red' }}>*</span></Label>
-                    <Input type="select" id="academicDegree" name="academicDegree" value={formData.academicDegree} onChange={handleInputChange}>
-                      <option value="">Select Academic Degree</option>
-                      <option value="diploma">Diploma</option>
-                      <option value="bachelor">Bachelor</option>
-                      <option value="master">Master</option>
-                      <option value="phd">PhD</option>
-                    </Input>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="university">University <span style={{ color: 'red' }}>*</span></Label>
-                    <Input type="select" id="university" name="university" value={formData.university} onChange={handleUniversityChange}>
-                      <option value="">Select University</option>
-                      {universities.map((university) => (
-                        <option key={university.id} value={university.id}>
-                          {university.name}
-                        </option>
-                      ))}
-                    </Input>
-                  </FormGroup>
-                  <FormGroup>
-                    <Label for="program">Program <span style={{ color: 'red' }}>*</span></Label>
-                    <Input type="select" id="program" name="program" value={formData.program} onChange={handleInputChange}>
-                      <option value="">Select Program</option>
-                      {programs.map((program) => (
-                        <option key={program.id} value={program.id}>
-                          {program.name}
-                        </option>
-                      ))}
-                    </Input>
-                  </FormGroup>
+                  <Label for="university">University <span style={{ color: 'red' }}>*</span></Label>
+                  <Input
+                    type="select"
+                    id="university"
+                    onChange={handleUniversityChange}
+                  >
+                    <option value="">Select University</option>
+                    {universities.map(university => (
+                      <option key={university.id} value={university.id}>{university.name}</option>
+                    ))}
+                  </Input>
+                </FormGroup>  
+               
+                <FormGroup>
+                  <Label for="program">Program <span style={{ color: 'red' }}>*</span></Label>
+                  <Input
+                  type="select"
+                  id="program"
+                  onChange={(e) => {
+                    setFormData({ ...formData, program: e.target.value });
+                    handleProgramChange(e); // Call handleProgramChange separately
+                  }}
+                >
+
+                    <option value="">Select Program</option>
+                    {programs.map(program => (
+                      <option key={program.id} value={program.id}>{program.name}</option>
+                    ))}
+                  </Input>
+                </FormGroup>
                   <FormGroup>
                     <Label for="semester">Semester <span style={{ color: 'red' }}>*</span></Label>
                     <Input type="select" id="semester" name="semester" value={formData.semester} onChange={handleSemesterChange}>

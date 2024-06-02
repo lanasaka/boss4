@@ -46,7 +46,7 @@ const ShowApps = () => {
   };
 
   const getButtonConfig = (application) => {
-    switch (application.type) {
+    switch (application.appType) {
       case 'new':
         return { text: 'New', color: 'secondary' };
       case 'waiting':
