@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import {
   CButton,
@@ -48,8 +48,7 @@ const Login = () => {
         const user = users.find(user => user.name === name && user.password === password);
 
         if (user) {
-          // Save user id to localStorage
-          localStorage.setItem('userId', user.id);
+          localStorage.setItem('user', JSON.stringify(user));
           toast.success('Login successful');
           navigate('/dashboard');
         } else {
@@ -127,6 +126,7 @@ const Login = () => {
           </CCol>
         </CRow>
       </CContainer>
+      <ToastContainer />
     </div>
   );
 };
