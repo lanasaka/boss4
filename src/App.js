@@ -26,12 +26,12 @@ class App extends Component {
           <Routes>
             <Route path="/" element={<Login />} />
             <Route element={<ProtectedRoutes />}>
-              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="*/dashboard" element={<Dashboard />} />
               <Route path="*" element={<DefaultLayout />} />
-              <Route path="/apps" element={<NewApp />} />
-              <Route path="/apps/newApp" element={<NewApp />} />
-              <Route path="/apps/showApps" element={<ShowApps />} />
-              <Route path="/apps/:appId" element={<ApplicationDetails />} />
+              <Route path="*/apps" element={<NewApp />} />
+              <Route path="*/apps/newApp" element={<NewApp />} />
+              <Route path="*/apps/showApps" element={<ShowApps />} />
+              <Route path="*/apps/:appId" element={<ApplicationDetails />} />
             </Route>
           </Routes>
         </Suspense>
