@@ -429,4 +429,3 @@ const NewApp = () => {
   };
   
   export default NewApp;
-  

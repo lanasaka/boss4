@@ -48,7 +48,7 @@ const Login = () => {
         const user = users.find(user => user.name === name && user.password === password);
 
         if (user) {
-          localStorage.setItem('user', JSON.stringify(user));
+          localStorage.setItem('userId', user.id); // Store the user ID in local storage
           toast.success('Login successful');
           navigate('/dashboard');
         } else {

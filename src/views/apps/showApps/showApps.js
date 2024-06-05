@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, Button, Input } from 'reactstrap';
+import { Container, Table, Button, Input, Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 const ShowApps = () => {
   const [applications, setApplications] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const fetchApplications = async () => {
     try {
@@ -14,13 +15,15 @@ const ShowApps = () => {
       if (!userId) {
         throw new Error('User ID not found');
       }
-  
+
       const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications?userId=${userId}`);
       const data = await response.json();
       setApplications(data);
     } catch (error) {
       console.error('Error fetching data:', error);
       toast.error('Error fetching applications. Please try again later.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -45,31 +48,28 @@ const ShowApps = () => {
     }
   };
 
-  const getButtonConfig = (application) => {
-    switch (application.appType) {
-      case 'new':
-        return { text: 'New', color: 'secondary' };
-      case 'waiting':
-        return { text: 'Waiting', color: 'warning' };
-      case 'offer':
-        return { text: 'Offer', color: 'primary' };
-      case 'payment':
-        return { text: 'Payment', color: 'info' };
-      case 'acceptance':
-        return { text: 'Acceptance', color: 'success' };
-      case 'rejected':
-        return { text: 'Rejected', color: 'danger' };
-      case 'complete':
-        return { text: 'Complete', color: 'dark' };
-      default:
-        return { text: 'New', color: 'secondary' };
-    }
+  const buttonConfig = {
+    new: { text: 'New', color: 'secondary' },
+    waiting: { text: 'Waiting', color: 'warning' },
+    offer: { text: 'Offer', color: 'primary' },
+    payment: { text: 'Payment', color: 'info' },
+    acceptance: { text: 'Acceptance', color: 'success' },
+    rejected: { text: 'Rejected', color: 'danger' },
+    complete: { text: 'Complete', color: 'dark' }
   };
 
-  const filteredApplications = applications.filter((app) =>
-    app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    app.email.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredApplications = applications.filter(({ name, email }) =>
+    name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <Container className="text-center">
+        <Spinner style={{ width: '3rem', height: '3rem' }} /> Loading applications...
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -97,27 +97,37 @@ const ShowApps = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredApplications.map((app, index) => (
-            <tr key={app.id}>
-              <th scope="row">{index + 1}</th>
-              <td>{app.name}</td>
-              <td>{app.nationality}</td>
-              <td>{app.email}</td>
-              <td>{app.university}</td>
-              <td>{app.academicDegree}</td>
-              <td>{app.program}</td>
-              <td>{app.semester}</td>
-              <td>
-                <Button color={getButtonConfig(app).color} size="md">{getButtonConfig(app).text}</Button>
-              </td>
-              <td>
-                <Button color="info" size="md" className="mr-2">
-                  <Link to={`/apps/${app.id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Details</Link>
-                </Button>
-                <Button color="danger" size="md" onClick={() => deleteApplication(app.id)}>Delete</Button>
-              </td>
+          {filteredApplications.length > 0 ? (
+            filteredApplications.map((app, index) => {
+              const { id, name, nationality, email, university, academicDegree, program, semester, appType } = app;
+              const { text, color } = buttonConfig[appType] || buttonConfig.new;
+              return (
+                <tr key={id}>
+                  <th scope="row">{index + 1}</th>
+                  <td>{name}</td>
+                  <td>{nationality}</td>
+                  <td>{email}</td>
+                  <td>{university}</td>
+                  <td>{academicDegree}</td>
+                  <td>{program}</td>
+                  <td>{semester}</td>
+                  <td>
+                    <Button color={color} size="md">{text}</Button>
+                  </td>
+                  <td>
+                    <Button color="info" size="md" className="mr-2">
+                      <Link to={`/apps/${id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Details</Link>
+                    </Button>
+                    <Button color="danger" size="md" onClick={() => deleteApplication(id)}>Delete</Button>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan="10" className="text-center">No applications found</td>
             </tr>
-          ))}
+          )}
         </tbody>
       </Table>
     </Container>
