@@ -428,7 +428,7 @@ const [receiptUrl, setReceiptUrl] = useState('');
         <Col md="4">
           <Card>
             <CardBody>
-              <h4 className="card-title">Upload Documents</h4>
+              <h4 className="card-title">Check the Documents</h4>
               <Form>
               <FormGroup>
               <Label for="passportPhoto">Photo of Passport</Label>

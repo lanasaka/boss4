@@ -49,6 +49,7 @@ const Login = () => {
 
         if (user) {
           localStorage.setItem('userId', user.id); // Store the user ID in local storage
+          localStorage.setItem('userName', user.name); // Store the user name in local storage
           toast.success('Login successful');
           navigate('/dashboard');
         } else {
