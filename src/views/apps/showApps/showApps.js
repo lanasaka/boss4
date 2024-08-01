@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, Button, Input, Spinner } from 'reactstrap';
+import { Container, Table, Button, Input, Card, CardBody, Row, Col,Spinner } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -7,6 +7,8 @@ const ShowApps = () => {
   const [applications, setApplications] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(true);
+  const [applicationTypeFilter, setApplicationTypeFilter] = useState('');
+  const applicationTypes = ['new', 'waiting', 'offer', 'payment', 'acceptance', 'rejected', 'complete'];
 
   const fetchApplications = async () => {
     try {
@@ -48,14 +50,25 @@ const ShowApps = () => {
     }
   };
 
-  const buttonConfig = {
-    new: { text: 'New', color: 'secondary' },
-    waiting: { text: 'Waiting', color: 'warning' },
-    offer: { text: 'Offer', color: 'primary' },
-    payment: { text: 'Payment', color: 'info' },
-    acceptance: { text: 'Acceptance', color: 'success' },
-    rejected: { text: 'Rejected', color: 'danger' },
-    complete: { text: 'Complete', color: 'dark' }
+  const getButtonConfig = (application) => {
+    switch (application.appType) {
+      case 'new':
+        return { text: 'New Application', color: 'secondary' };
+      case 'waiting':
+        return { text: 'Waiting for data processing', color: 'warning' };
+      case 'offer':
+        return { text: 'Initial Acceptance', color: 'primary' };
+      case 'payment':
+        return { text: 'Waiting for payment', color: 'info' };
+      case 'acceptance':
+        return { text: 'Final Acceptance', color: 'success' };
+      case 'rejected':
+        return { text: 'Rejected', color: 'danger' };
+      case 'complete':
+        return { text: 'Completed', color: 'dark' };
+      default:
+        return { text: 'New Application', color: 'secondary' };
+    }
   };
 
   const filteredApplications = applications.filter(({ name, email }) =>
@@ -73,24 +86,60 @@ const ShowApps = () => {
 
   return (
     <Container>
-      <h4 className="mt-4 mb-4">List of Applications</h4>
-      <Input
-        type="text"
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        placeholder="Search by Name or Email"
-        className="mb-3"
-      />
-      <Table striped>
+
+     <Card className="mb-4" style={{ borderColor: '#28a745', borderWidth: '2px', borderStyle: 'solid' }}>
+        <CardBody>
+          <Row className="align-items-center">
+            <Col md={6} className="mb-3 mb-md-0">
+              <Input
+                type="text"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                placeholder="Search by Name or Email"
+                className="w-100"
+                style={{ maxWidth: '650px', borderColor: '#28a745' }}
+              />
+            </Col>
+            <Col md={6}>
+              <Row form>
+                <Col md={6} className="mb-3">
+                  <label className="mr-2">Filter by Application Type:</label>
+                  <Input
+                    type="select"
+                    value={applicationTypeFilter}
+                    onChange={(e) => setApplicationTypeFilter(e.target.value)}
+                    style={{ borderColor: '#28a745' }}
+                  >
+                    <option value="">All Types</option>
+                    <option value="new">New Application</option>
+                    <option value="waiting">Waiting for data processing</option>
+                    <option value="offer">Initial Acceptance</option>
+                    <option value="payment">Waiting for payment</option>
+                    <option value="acceptance">Final Acceptance</option>
+                    <option value="complete">Completed</option>
+                    {applicationTypes.filter(type => type !== 'new' && type !== 'waiting' && type !== 'offer' && type !== 'payment' && type !== 'acceptance' && type !== 'complete').map(type => (
+                      <option key={type} value={type}>
+                        {type.charAt(0).toUpperCase() + type.slice(1)}
+                      </option>
+                    ))}
+                  </Input>
+                </Col>
+             
+              </Row>
+            </Col>
+          </Row>
+        </CardBody>
+      </Card>
+      <Table
+        striped
+     
+      >
         <thead>
           <tr>
             <th>#</th>
             <th>Name</th>
             <th>Nationality</th>
             <th>Email</th>
-            <th>University</th>
-            <th>Academic Degree</th>
-            <th>Program</th>
             <th>Semester</th>
             <th>Application Type</th>
             <th>Actions</th>
@@ -99,21 +148,19 @@ const ShowApps = () => {
         <tbody>
           {filteredApplications.length > 0 ? (
             filteredApplications.map((app, index) => {
-              const { id, name, nationality, email, university, academicDegree, program, semester, appType } = app;
-              const { text, color } = buttonConfig[appType] || buttonConfig.new;
+              const { id, name, nationality, email, semester, appType } = app;
+           
               return (
                 <tr key={id}>
                   <th scope="row">{index + 1}</th>
                   <td>{name}</td>
                   <td>{nationality}</td>
                   <td>{email}</td>
-                  <td>{university}</td>
-                  <td>{academicDegree}</td>
-                  <td>{program}</td>
+                 
                   <td>{semester}</td>
                   <td>
-                    <Button color={color} size="md">{text}</Button>
-                  </td>
+                <Button color={getButtonConfig(app).color} size="md">{getButtonConfig(app).text}</Button>
+              </td>
                   <td>
                     <Button color="info" size="md" className="mr-2">
                       <Link to={`/apps/${id}`} style={{ color: 'inherit', textDecoration: 'none' }}>Details</Link>
