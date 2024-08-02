@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Table, Button, Input, Card, CardBody, Row, Col,Spinner } from 'reactstrap';
+import { Container, Table, Button, Input, Spinner,Row,Col,Card,CardBody } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
@@ -9,7 +9,6 @@ const ShowApps = () => {
   const [loading, setLoading] = useState(true);
   const [applicationTypeFilter, setApplicationTypeFilter] = useState('');
   const applicationTypes = ['new', 'waiting', 'offer', 'payment', 'acceptance', 'rejected', 'complete'];
-
   const fetchApplications = async () => {
     try {
       // Retrieve userId from localStorage
@@ -71,10 +70,18 @@ const ShowApps = () => {
     }
   };
 
-  const filteredApplications = applications.filter(({ name, email }) =>
-    name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredApplications = applications.filter((app) => {
+    const matchesSearchTerm = app.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                               app.email.toLowerCase().includes(searchTerm.toLowerCase());
+
+    const matchesApplicationType = applicationTypeFilter === '' || 
+                                   (applicationTypeFilter === 'new' && (app.appType === '' || !app.appType || app.appType === 'new')) ||
+                                   app.appType === applicationTypeFilter;
+
+
+
+    return matchesSearchTerm && matchesApplicationType;
+  });
 
   if (loading) {
     return (
@@ -86,8 +93,7 @@ const ShowApps = () => {
 
   return (
     <Container>
-
-     <Card className="mb-4" style={{ borderColor: '#28a745', borderWidth: '2px', borderStyle: 'solid' }}>
+      <Card className="mb-4" style={{ borderColor: '#28a745', borderWidth: '2px', borderStyle: 'solid' }}>
         <CardBody>
           <Row className="align-items-center">
             <Col md={6} className="mb-3 mb-md-0">
@@ -124,22 +130,20 @@ const ShowApps = () => {
                     ))}
                   </Input>
                 </Col>
-             
+
               </Row>
             </Col>
           </Row>
         </CardBody>
       </Card>
-      <Table
-        striped
-     
-      >
+      <Table striped>
         <thead>
           <tr>
             <th>#</th>
             <th>Name</th>
             <th>Nationality</th>
             <th>Email</th>
+         
             <th>Semester</th>
             <th>Application Type</th>
             <th>Actions</th>
@@ -148,15 +152,15 @@ const ShowApps = () => {
         <tbody>
           {filteredApplications.length > 0 ? (
             filteredApplications.map((app, index) => {
-              const { id, name, nationality, email, semester, appType } = app;
-           
+              const { id, name, nationality, email, university, academicDegree, program, semester, appType } = app;
+            
               return (
                 <tr key={id}>
                   <th scope="row">{index + 1}</th>
                   <td>{name}</td>
                   <td>{nationality}</td>
                   <td>{email}</td>
-                 
+             
                   <td>{semester}</td>
                   <td>
                 <Button color={getButtonConfig(app).color} size="md">{getButtonConfig(app).text}</Button>

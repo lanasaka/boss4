@@ -8,6 +8,7 @@ const NewApp = () => {
   const [universities, setUniversities] = useState([]);
   const [programs, setPrograms] = useState([]);
   const [academicDegree, setAcademicDegree] = useState('');
+  const [applicationDetails, setApplicationDetails] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     passportNumber: '',
@@ -41,31 +42,67 @@ const NewApp = () => {
   };
 
   
+  // const handleApplicationSubmit = async () => {
+  //   try {
+  //     const formDataToSend = new FormData();
+  //     for (const key in formData) {
+  //       formDataToSend.append(key, formData[key]);
+  //     }
+
+  //     const userId = localStorage.getItem('userId');
+  //     if (!userId) {
+  //       throw new Error('User ID not found');
+  //     }
+
+  //     formDataToSend.append('userId', userId);
+
+  //     const response = await Axios.post('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications', formDataToSend);
+
+  //     console.log('Full Response:', response);
+  //     console.log('Response Data:', response.data);
+
+  //     const applicationId = response.data.id;
+  //     setApplicationId(applicationId);
+  //     console.log('Submitted Application ID:', applicationId);
+  //     alert('Application submitted successfully!');
+  //     goToUniversityTab();
+  //   } catch (error) {
+  //     console.error('Error submitting application:', error);
+  //     alert('Error submitting application. Please try again later.');
+  //   }
+  // };
+  
   const handleApplicationSubmit = async () => {
     try {
       const formDataToSend = new FormData();
       for (const key in formData) {
         formDataToSend.append(key, formData[key]);
       }
-  
-      const url = 'https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications';
-      const response = await Axios.post(url, formDataToSend);
-  
+
+      const userId = localStorage.getItem('userId');
+      if (!userId) {
+        throw new Error('User ID not found');
+      }
+
+      formDataToSend.append('userId', userId);
+
+      const response = await Axios.post('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications', formDataToSend);
+
       console.log('Full Response:', response);
       console.log('Response Data:', response.data);
-  
-      // Extract applicationId from response
-      const applicationId = response.data.id; // Adjust this according to the actual response structure
-  
-      setApplicationId(applicationId); // Store the application ID
-      console.log('Submitted Application ID:', applicationId); // Log the application ID
+
+      const { id, userName, company } = response.data;
+      setApplicationDetails({ id, userName, company });
+      console.log('Submitted Application ID:', id);
       alert('Application submitted successfully!');
-      goToUniversityTab(); // Navigate to the university tab
+      goToUniversityTab();
     } catch (error) {
       console.error('Error submitting application:', error);
       alert('Error submitting application. Please try again later.');
     }
   };
+
+  
   const goToUniversityTab = () => {
     setActiveTab('university');
   };
