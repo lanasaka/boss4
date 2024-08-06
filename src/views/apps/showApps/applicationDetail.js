@@ -15,7 +15,7 @@ const ApplicationDetails = () => {
   const { appId } = useParams();
   const [academicDetails, setAcademicDetails] = useState([]);
   const [extraFiles, setExtraFiles] = useState([]);
-
+  const [files, setFiles] = useState([]);
   const [otherFile, setOtherFile] = useState(null);
   const [otherFileName, setOtherFileName] = useState('');
   
@@ -84,22 +84,50 @@ const ApplicationDetails = () => {
       toast.error('Error uploading file. Please try again later.');
     }
   };
+  const downloadExtraFile = async (filePath) => {
+    if (!filePath) {
+      toast.warn('File path is empty.');
+      console.warn('Received file path:', filePath); // Log the filePath
+      return;
+    }
+  
+    try {
+      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/download/${filePath}`);
+      if (!response.ok) {
+        throw new Error('Failed to download file.');
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', filePath.split('/').pop());
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast.success(`File ${filePath.split('/').pop()} downloaded successfully.`);
+    } catch (error) {
+      console.error('Error downloading file:', error);
+      toast.error('Error downloading file. Please try again later.');
+    }
+  };
+  
+  
   const fetchFiles = async () => {
     try {
       const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/extra-files/${appId}`);
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch extra files');
+        throw new Error('Network response was not ok');
       }
       const data = await response.json();
-      console.log(data); // Check if this is an array
-      setExtraFiles(data);
+      setFiles(data); // Adjust according to your actual data structure
     } catch (error) {
-      console.error('Error fetching files:', error);
-      toast.error(`Error fetching files: ${error.message}`);
+      console.error('Error fetching extra files:', error);
+      toast.error('Error fetching extra files. Please try again later.');
     }
   };
-
+  
+  
   
   useEffect(() => {
     fetchFiles();
@@ -573,7 +601,7 @@ const ApplicationDetails = () => {
                   <FormGroup>
                 <Label for="otherFile">Upload Extra File:</Label>
                 <Input type="file" id="otherFile" onChange={handleFileChange2} />
-                <Button color="primary" onClick={uploadExtraFile}>
+                <Button color="primary" onClick={uploadExtraFile} className='mt-2'>
                   Upload File
                 </Button>
               </FormGroup>
@@ -582,19 +610,30 @@ const ApplicationDetails = () => {
          
 
             </tbody>
-            <tbody>
-          {Array.isArray(extraFiles) && extraFiles.map(file => (
-            <tr key={file.id}>
-              <td>{file.file_name}</td>
-              <td>
-                <a href={getFileUrl(file.file_name)} target="_blank" rel="noopener noreferrer">
-                  Download
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+     
           </Table>
+          <Table responsive className="table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>File Name</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {files.map((file, index) => (
+          <tr key={index}>
+            <td>{file.file_name}</td>
+            <td>
+              <FontAwesomeIcon
+                icon={faDownload}
+                onClick={() => downloadExtraFile(file.file_path)}
+                style={{ cursor: 'pointer', color: '#007bff', marginRight: '10px' }}
+              />
+            </td>
+          </tr>
+        ))}
+      </tbody>
+    </Table>
         </CardBody>
           </Card>
         </div>
