@@ -443,24 +443,8 @@ const ApplicationDetails = () => {
                         <p>{semester}</p>
                       </FormGroup>
                     
-                      <FormGroup>
-                      <Label for="appType">Application Type:</Label>
-                      <Input
-                        type="select"
-                        id="appType"
-                        value={appType}
-                        onChange={(e) => handleAppTypeChange(e.target.value)}
-                      >
-                        <option value="new">New Application</option>
-                        <option value="waiting">Waiting for data processing</option>
-                        <option value="offer">Initial Acceptance</option>
-                        <option value="payment">Waiting for payment</option>
-                        <option value="acceptance">Final Acceptance</option>
-                        <option value="rejected">Rejected</option>
-                        <option value="complete">Completed</option>
-                      </Input>
-                    </FormGroup>
-                    <Button color="primary" onClick={handleSave}>Save Changes</Button>
+                     
+                 
                       
                     </Form>
                   </CardBody>
@@ -624,15 +608,7 @@ const ApplicationDetails = () => {
         
             <div className="tab-pane fade show active" id="initial-acceptance" role="tabpanel" aria-labelledby="initial-acceptance-tab">
               <h4>Initial Acceptance</h4>
-              <Form>
-                <FormGroup>
-                
-                  <Input type="file" name="file" id="offerLetterFile" onChange={handleFileChange} />
-                </FormGroup>
-                <Button color="primary" onClick={uploadOfferLetter}>
-                  <FontAwesomeIcon icon={faUpload} /> Upload Initial Acceptance
-                </Button>
-              </Form>
+             
               <hr />
               <h5>Initial Acceptances:</h5>
               <Table responsive>
@@ -668,15 +644,7 @@ const ApplicationDetails = () => {
         
             <div className="tab-pane fade show active" id="initial-acceptance" role="tabpanel" aria-labelledby="initial-acceptance-tab">
               <h4>Final Acceptance</h4>
-              <Form>
-                <FormGroup>
-                
-                  <Input type="file" name="file" id="finalLetterFile" onChange={handleFileChange} />
-                </FormGroup>
-                <Button color="primary" onClick={uploadFinalLetter}>
-                  <FontAwesomeIcon icon={faUpload} /> Upload Final Acceptance
-                </Button>
-              </Form>
+             
               <hr />
               <h5>Final Acceptances:</h5>
               <Table responsive>

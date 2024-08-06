@@ -50,6 +50,11 @@ const Login = () => {
         if (user) {
           localStorage.setItem('userId', user.id); // Store the user ID in local storage
           localStorage.setItem('userName', user.name); // Store the user name in local storage
+          localStorage.setItem('userEmail', user.email); // Store the user email in local storage
+          localStorage.setItem('userRole', user.role); // Store the user role in local storage
+          localStorage.setItem('userCompany', user.company); // Store the user company in local storage
+          
+          console.log('Logged in user ID:', user.id); // Log the user ID
           toast.success('Login successful');
           navigate('/dashboard');
         } else {

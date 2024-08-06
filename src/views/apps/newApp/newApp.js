@@ -78,22 +78,19 @@ const NewApp = () => {
       for (const key in formData) {
         formDataToSend.append(key, formData[key]);
       }
-
+  
       const userId = localStorage.getItem('userId');
-      if (!userId) {
-        throw new Error('User ID not found');
+      const userName = localStorage.getItem('userName');
+      if (!userId || !userName) {
+        throw new Error('User ID or Name not found');
       }
-
+  
       formDataToSend.append('userId', userId);
-
+      formDataToSend.append('userName', userName);
+  
       const response = await Axios.post('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications', formDataToSend);
-
-      console.log('Full Response:', response);
-      console.log('Response Data:', response.data);
-
-      const { id, userName, company } = response.data;
-      setApplicationDetails({ id, userName, company });
-      console.log('Submitted Application ID:', id);
+      const { id } = response.data;
+      setApplicationId(id);
       alert('Application submitted successfully!');
       goToUniversityTab();
     } catch (error) {
@@ -101,7 +98,7 @@ const NewApp = () => {
       alert('Error submitting application. Please try again later.');
     }
   };
-
+  
   
   const goToUniversityTab = () => {
     setActiveTab('university');
@@ -114,14 +111,13 @@ const NewApp = () => {
       }
   
       const dataToSend = {
-        application_id: applicationId, // Ensure applicationId is included
+        application_id: applicationId,
         academic_degree: formData.academicDegree,
         university: formData.university,
         program: formData.program
       };
   
-      const url = 'https://boss4edu-a37be3e5a8d0.herokuapp.com/api/application-details';
-      await Axios.post(url, dataToSend, {
+      await Axios.post('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/application-details', dataToSend, {
         headers: {
           'Content-Type': 'application/json'
         }
@@ -170,81 +166,78 @@ useEffect(() => {
     fetchUniversities();
   }, [academicDegree]);
 
-  const fetchUniversities = () => {
-    if (academicDegree) {
-      Axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/${academicDegree}-universities`)
-        .then(response => {
-          setUniversities(response.data);
-        })
-        .catch(error => {
-          console.error('Error fetching universities:', error);
-        });
-    }
-  };
-
-  // Function to fetch programs based on selected university and academic degree
-  const fetchPrograms = (universityId, academicDegree) => {
-    let programEndpoint;
-    switch (academicDegree) {
-      case 'diploma':
-        programEndpoint = 'diploma_programs';
-        break;
-      case 'bachelor':
-        programEndpoint = 'bachelor_programs';
-        break;
-      case 'master':
-        programEndpoint = 'master_programs';
-        break;
-      case 'phd':
-        programEndpoint = 'phd_programs';
-        break;
-      default:
-        programEndpoint = '';
-    }
-
-    if (programEndpoint) {
-      Axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/universities/${universityId}/${programEndpoint}`)
-        .then(response => {
-          setPrograms(response.data);
-        })
-        .catch(error => {
-          console.error('Error fetching programs:', error);
-        });
-    }
-  };
-
-  // Function to handle changes in academic degree selection
+  
   const handleAcademicDegreeChange = (selectedDegree) => {
     setFormData({
       ...formData,
       academicDegree: selectedDegree
     });
   };
-
-  // Function to handle changes in university selection
+  
   const handleUniversityChange = (e) => {
     const universityId = e.target.value;
     const selectedUniversity = universities.find(university => university.id === parseInt(universityId));
-    const universityName = selectedUniversity ? selectedUniversity.name : '';
-
+    
     setFormData({
       ...formData,
-      university: universityName
+      university: selectedUniversity ? selectedUniversity.name : ''
     });
-    fetchPrograms(universityId, academicDegree);
+    
+    fetchPrograms(universityId, formData.academicDegree);
   };
-
-  // Function to handle changes in program selection
+  
   const handleProgramChange = (e) => {
     const selectedProgramId = e.target.value;
     const selectedProgram = programs.find(program => program.id === parseInt(selectedProgramId));
-    const programName = selectedProgram ? selectedProgram.name : '';
-
+    
     setFormData({
       ...formData,
-      program: programName
+      program: selectedProgram ? selectedProgram.name : ''
     });
   };
+  
+const fetchUniversities = () => {
+  if (academicDegree) {
+    Axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/${academicDegree}-universities`)
+      .then(response => {
+        setUniversities(response.data); // response.data should be an array of universities
+      })
+      .catch(error => {
+        console.error('Error fetching universities:', error);
+      });
+  }
+};
+
+const fetchPrograms = (universityId, academicDegree) => {
+  let programEndpoint;
+  switch (academicDegree) {
+    case 'diploma':
+      programEndpoint = 'diploma_programs';
+      break;
+    case 'bachelor':
+      programEndpoint = 'bachelor_programs';
+      break;
+    case 'master':
+      programEndpoint = 'master_programs';
+      break;
+    case 'phd':
+      programEndpoint = 'phd_programs';
+      break;
+    default:
+      programEndpoint = '';
+  }
+
+  if (programEndpoint) {
+    Axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/universities/${universityId}/${programEndpoint}`)
+      .then(response => {
+        setPrograms(response.data); // response.data should be an array of programs
+      })
+      .catch(error => {
+        console.error('Error fetching programs:', error);
+      });
+  }
+};
+
 
   // Function to handle input changes (except for special cases like nationality)
   const handleInputChange = (e) => {
@@ -554,7 +547,7 @@ useEffect(() => {
                   <h4 className="card-title">University Information</h4>
                   <Form>
                     
-                    <FormGroup>
+                  <FormGroup>
                       <Label for="academicDegree">Academic Degree <span style={{ color: 'red' }}>*</span></Label>
                      <Input
                         type="select"

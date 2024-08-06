@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Container, Table, Button, Input, Spinner,Row,Col,Card,CardBody } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const ShowApps = () => {
   const [applications, setApplications] = useState([]);
@@ -34,21 +35,20 @@ const ShowApps = () => {
 
   const deleteApplication = async (id) => {
     try {
-      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications/${id}`, {
-        method: 'DELETE'
-      });
-      if (response.ok) {
+      const response = await axios.delete(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications/${id}`);
+      if (response.status === 200) {
         fetchApplications();
         toast.success('Application deleted successfully');
       } else {
         toast.error('Failed to delete application');
       }
     } catch (error) {
-      console.error('Error deleting application:', error);
+      console.error('Error deleting application:', error.response ? error.response.data : error.message);
       toast.error('Error deleting application. Please try again later.');
     }
   };
-
+  
+  
   const getButtonConfig = (application) => {
     switch (application.appType) {
       case 'new':
