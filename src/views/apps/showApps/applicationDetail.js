@@ -7,7 +7,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ChatComponent from './ChatComponent'; // Import ChatComponent
 import './ApplicationDetails.css';
-import { faDownload, faUpload } from '@fortawesome/free-solid-svg-icons';
+import { faDownload, faUpload ,faTrashAlt} from '@fortawesome/free-solid-svg-icons';
 
 
 const getFileUrl = (fileName) => `https://boss4edu.com/uploads/${fileName}`;
@@ -84,6 +84,28 @@ const ApplicationDetails = () => {
       toast.error('Error uploading file. Please try again later.');
     }
   };
+  const deleteExtraFile = async (fileId, filePath) => {
+    try {
+      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/extra-files/${fileId}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error('Failed to delete file.');
+      }
+  
+  
+       await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/delete-file/${filePath}`, {
+         method: 'DELETE',
+       });
+  
+      toast.success('File deleted successfully.');
+      fetchFiles(); // Refresh file list after deletion
+    } catch (error) {
+      console.error('Error deleting file:', error);
+      toast.error('Error deleting file. Please try again later.');
+    }
+  };
+  
   const downloadExtraFile = async (filePath) => {
     if (!filePath) {
       toast.warn('File path is empty.');
@@ -182,7 +204,7 @@ const ApplicationDetails = () => {
       const data = await response.json();
       setOfferLetters(data);
     } catch (error) {
-      console.error('Error fetching offer letters:', error);
+      console.error('Error fetching Initial Acceptance:', error);
       // Handle error as needed
     }
   };
@@ -204,7 +226,7 @@ const ApplicationDetails = () => {
       const data = await response.json();
       setFinalLetters(data);
     } catch (error) {
-      console.error('Error fetching offer letters:', error);
+      console.error('Error fetching final letters:', error);
       // Handle error as needed
     }
   };
@@ -234,16 +256,16 @@ const ApplicationDetails = () => {
         body: formData,
       });
       if (!response.ok) {
-        throw new Error('Failed to upload offer letter.');
+        throw new Error('Failed to upload Initial Acceptance.');
       }
       
-      toast.success('Offer letter uploaded successfully.');
+      toast.success('Initial Acceptance uploaded successfully.');
       fetchOfferLetters(); // Refresh offer letters after successful upload
       setAppType('offer'); // Update appType to 'offer'
       await updateAppType('offer'); // Ensure the server is updated
     } catch (error) {
-      console.error('Error uploading offer letter:', error);
-      toast.error('Error uploading offer letter. Please try again later.');
+      console.error('Error uploading Initial Acceptance:', error);
+      toast.error('Error uploading Initial Acceptance. Please try again later.');
     }
   };
   
@@ -325,7 +347,7 @@ const ApplicationDetails = () => {
 
   const downloadOfferLetter = async (offerLetterPath) => {
     if (!offerLetterPath) {
-      toast.warn('Offer letter path is empty.');
+      toast.warn('Initial Acceptance path is empty.');
       return;
     }
 
@@ -338,10 +360,10 @@ const ApplicationDetails = () => {
       link.setAttribute('download', offerLetterPath.split('/').pop());
       document.body.appendChild(link);
       link.click();
-      toast.success(`Offer letter ${offerLetterPath.split('/').pop()} downloaded successfully.`);
+      toast.success(`Initial Acceptance ${offerLetterPath.split('/').pop()} downloaded successfully.`);
     } catch (error) {
-      console.error('Error downloading offer letter:', error);
-      toast.error('Error downloading offer letter. Please try again later.');
+      console.error('Error downloading Initial Acceptance:', error);
+      toast.error('Error downloading Initial Acceptance. Please try again later.');
     }
   };
 
@@ -629,6 +651,11 @@ const ApplicationDetails = () => {
                 onClick={() => downloadExtraFile(file.file_path)}
                 style={{ cursor: 'pointer', color: '#007bff', marginRight: '10px' }}
               />
+                 <FontAwesomeIcon
+          icon={faTrashAlt}
+          onClick={() => deleteExtraFile(file.id, file.file_path)}
+          style={{ cursor: 'pointer', color: '#dc3545' }}
+        />
             </td>
           </tr>
         ))}
