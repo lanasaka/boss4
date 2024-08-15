@@ -239,65 +239,6 @@ const ApplicationDetails = () => {
     setFinalLetterName(file.name);
   };
 
-  const uploadOfferLetter = async () => {
-    if (!offerLetterFile || !offerLetterName) {
-      toast.error('Please select a file to upload.');
-      return;
-    }
-  
-    const formData = new FormData();
-    formData.append('file', offerLetterFile);
-    formData.append('application_id', appId);
-    formData.append('offer_letter_name', offerLetterName);
-  
-    try {
-      const response = await fetch('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/offer-letters', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) {
-        throw new Error('Failed to upload Initial Acceptance.');
-      }
-      
-      toast.success('Initial Acceptance uploaded successfully.');
-      fetchOfferLetters(); // Refresh offer letters after successful upload
-      setAppType('offer'); // Update appType to 'offer'
-      await updateAppType('offer'); // Ensure the server is updated
-    } catch (error) {
-      console.error('Error uploading Initial Acceptance:', error);
-      toast.error('Error uploading Initial Acceptance. Please try again later.');
-    }
-  };
-  
-  const uploadFinalLetter = async () => {
-    if (!finalLetterFile || !finalLetterName) {
-      toast.error('Please select a file to upload.');
-      return;
-    }
-  
-    const formData = new FormData();
-    formData.append('file', finalLetterFile);
-    formData.append('application_id', appId);
-    formData.append('final_letter_name', finalLetterName);
-  
-    try {
-      const response = await fetch('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/final-letters', {
-        method: 'POST',
-        body: formData,
-      });
-      if (!response.ok) {
-        throw new Error('Failed to upload final letter.');
-      }
-      
-      toast.success('Final letter uploaded successfully.');
-      fetchFinalLetters(); // Refresh final letters after successful upload
-      setAppType('acceptance'); // Update appType to 'acceptance'
-      await updateAppType('acceptance'); // Ensure the server is updated
-    } catch (error) {
-      console.error('Error uploading final letter:', error);
-      toast.error('Error uploading final letter. Please try again later.');
-    }
-  };
   
   const updateAppType = async (newType) => {
     try {
@@ -665,41 +606,36 @@ const ApplicationDetails = () => {
           </Card>
         </div>
         );
-      case 'initial-acceptance':
-        return (
-          <div className="application-details">
-        
-            <div className="tab-pane fade show active" id="initial-acceptance" role="tabpanel" aria-labelledby="initial-acceptance-tab">
-              <h4>Initial Acceptance</h4>
-             
-              <hr />
-        
-              <Table responsive>
-                <thead>
-                  <tr>
-                    <th>Initial Acceptance Name</th>
-                    <th>Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {offerLetters.map((letter) => (
-                    <tr key={letter.id}>
-                      <td>{letter.offer_letter_name}</td>
-                      <td>
-                      <a href={`https://boss4edu-a37be3e5a8d0.herokuapp.com${offer_letter_path}`} download>
-                  Download Offer Letter
-                </a>
-
-                     
-                      </td>
+        case 'initial-acceptance':
+          return (
+            <div className="application-details">
+              <div className="tab-pane fade show active" id="initial-acceptance" role="tabpanel" aria-labelledby="initial-acceptance-tab">
+                <h4>Initial Acceptance</h4>
+                <hr />
+                <Table responsive>
+                  <thead>
+                    <tr>
+                      <th>Initial Acceptance Name</th>
+                      <th>Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </Table>
+                  </thead>
+                  <tbody>
+                    {offerLetters.map((letter) => (
+                      <tr key={letter.id}>
+                        <td>{letter.offer_letter_name}</td>
+                        <td>
+                          <a href={`https://boss4edu-a37be3e5a8d0.herokuapp.com${letter.offer_letter_path}`} download>
+                            Download Offer Letter
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </Table>
+              </div>
             </div>
-  
-        </div>
-        );
+          );
+        
       case 'final-acceptance':
         return (
           <div className="application-details">
