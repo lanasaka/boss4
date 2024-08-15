@@ -686,11 +686,10 @@ const ApplicationDetails = () => {
                     <tr key={letter.id}>
                       <td>{letter.offer_letter_name}</td>
                       <td>
-                        <FontAwesomeIcon
-                          icon={faDownload}
-                          onClick={() => downloadOfferLetter(letter.offer_letter_path)}
-                          style={{ cursor: 'pointer', color: '#007bff', marginRight: '10px' }}
-                        />
+                      <a href={`https://boss4edu-a37be3e5a8d0.herokuapp.com${offer_letter_path}`} download>
+                  Download Offer Letter
+                </a>
+
                      
                       </td>
                     </tr>
