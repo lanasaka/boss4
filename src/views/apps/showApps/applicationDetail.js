@@ -107,32 +107,47 @@ const ApplicationDetails = () => {
   };
   
   const downloadExtraFile = async (filePath) => {
+    // Ensure filePath is provided
     if (!filePath) {
       toast.warn('File path is empty.');
       console.warn('Received file path:', filePath); // Log the filePath
       return;
     }
   
+    // Ensure filePath starts with '/'
+    if (!filePath.startsWith('/')) {
+      filePath = `/${filePath}`;
+    }
+  
     try {
-      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/download/${filePath}`);
+      // Fetch the file from the server
+      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com${filePath}`);
       if (!response.ok) {
         throw new Error('Failed to download file.');
       }
-      
+  
+      // Create a blob from the response
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
+  
+      // Create a link element to trigger download
       const link = document.createElement('a');
       link.href = url;
-      link.setAttribute('download', filePath.split('/').pop());
+      link.setAttribute('download', filePath.split('/').pop()); // Extract file name from the path
       document.body.appendChild(link);
       link.click();
+  
+      // Cleanup the link element
       document.body.removeChild(link);
+  
+      // Notify success
       toast.success(`File ${filePath.split('/').pop()} downloaded successfully.`);
     } catch (error) {
       console.error('Error downloading file:', error);
       toast.error('Error downloading file. Please try again later.');
     }
   };
+  
   
   
   const fetchFiles = async () => {
@@ -265,48 +280,47 @@ const ApplicationDetails = () => {
 
 
   const downloadFinalLetter = async (finalLetterPath) => {
-    if (!finalLetterPath) {
-      toast.warn('final letter path is empty.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/download/${finalLetterPath}`);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', finalLetterPath.split('/').pop());
-      document.body.appendChild(link);
-      link.click();
-      toast.success(`Final letter ${finalLetterPath.split('/').pop()} downloaded successfully.`);
-    } catch (error) {
-      console.error('Error downloading final letter:', error);
-      toast.error('Error downloading final letter. Please try again later.');
+    if (finalLetterPath && finalLetterPath !== 'null') {
+      try {
+        const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com${finalLetterPath}`);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', finalLetterPath.split('/').pop()); // Extract file name
+        document.body.appendChild(link);
+        link.click();
+        toast.success('Final Acceptance Letter downloaded successfully.');
+      } catch (error) {
+        console.error('Error downloading final acceptance letter:', error);
+        toast.error('Error downloading the file. Please try again later.');
+      }
+    } else {
+      toast.warn('Cannot download an empty file.');
     }
   };
-
+  
   const downloadOfferLetter = async (offerLetterPath) => {
-    if (!offerLetterPath) {
-      toast.warn('Initial Acceptance path is empty.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/download/${offerLetterPath}`);
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', offerLetterPath.split('/').pop());
-      document.body.appendChild(link);
-      link.click();
-      toast.success(`Initial Acceptance ${offerLetterPath.split('/').pop()} downloaded successfully.`);
-    } catch (error) {
-      console.error('Error downloading Initial Acceptance:', error);
-      toast.error('Error downloading Initial Acceptance. Please try again later.');
+    if (offerLetterPath && offerLetterPath !== 'null') {
+      try {
+        const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com${offerLetterPath}`);
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', offerLetterPath.split('/').pop());
+        document.body.appendChild(link);
+        link.click();
+        toast.success(`File downloaded successfully.`);
+      } catch (error) {
+        console.error('Error downloading Initial Acceptance:', error);
+        toast.error('Error downloading the file. Please try again later.');
+      }
+    } else {
+      toast.warn('Cannot download an empty file.');
     }
   };
+  
 
   const handleInputChange = (e, fieldName) => {
     const { value } = e.target;
@@ -577,32 +591,33 @@ const ApplicationDetails = () => {
      
           </Table>
           <Table responsive className="table-striped table-bordered">
-      <thead>
-        <tr>
-          <th>File Name</th>
-          <th>Action</th>
-        </tr>
-      </thead>
-      <tbody>
-        {files.map((file, index) => (
-          <tr key={index}>
-            <td>{file.file_name}</td>
-            <td>
-              <FontAwesomeIcon
-                icon={faDownload}
-                onClick={() => downloadExtraFile(file.file_path)}
-                style={{ cursor: 'pointer', color: '#007bff', marginRight: '10px' }}
-              />
-                 <FontAwesomeIcon
-          icon={faTrashAlt}
-          onClick={() => deleteExtraFile(file.id, file.file_path)}
-          style={{ cursor: 'pointer', color: '#dc3545' }}
-        />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </Table>
+  <thead>
+    <tr>
+      <th>File Name</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+  <tbody>
+    {files.map((file, index) => (
+      <tr key={index}>
+        <td>{file.file_name}</td>
+        <td>
+          <FontAwesomeIcon
+            icon={faDownload}
+            onClick={() => downloadExtraFile(file.file_path)}
+            style={{ cursor: 'pointer', color: '#007bff', marginRight: '10px' }}
+          />
+          <FontAwesomeIcon
+            icon={faTrashAlt}
+            onClick={() => deleteExtraFile(file.id, file.file_path)}
+            style={{ cursor: 'pointer', color: '#dc3545' }}
+          />
+        </td>
+      </tr>
+    ))}
+  </tbody>
+</Table>
+
         </CardBody>
           </Card>
         </div>
@@ -625,9 +640,13 @@ const ApplicationDetails = () => {
                       <tr key={letter.id}>
                         <td>{letter.offer_letter_name}</td>
                         <td>
-                          <a href={`https://boss4edu-a37be3e5a8d0.herokuapp.com${letter.offer_letter_path}`} download>
-                            Download Offer Letter
-                          </a>
+                    
+
+                  <FontAwesomeIcon
+                          icon={faDownload}
+                          onClick={() => downloadOfferLetter(letter.offer_letter_path)}
+                          style={{ cursor: 'pointer', color: '#007bff', marginRight: '10px' }}
+                        />
                         </td>
                       </tr>
                     ))}
@@ -658,9 +677,11 @@ const ApplicationDetails = () => {
                     <tr key={letter.id}>
                       <td>{letter.final_letter_name}</td>
                       <td>
-                       <a href={`https://boss4edu-a37be3e5a8d0.herokuapp.com${letter.final_letter_path}`} download>
-                            Download Offer Letter
-                          </a>
+                      <FontAwesomeIcon
+                          icon={faDownload}
+                          onClick={() => downloadFinalLetter(letter.final_letter_path)}
+                          style={{ cursor: 'pointer', color: '#007bff', marginRight: '10px' }}
+                        />
                      
                       </td>
                     </tr>
