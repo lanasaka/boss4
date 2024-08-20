@@ -19,7 +19,7 @@ import CIcon from '@coreui/icons-react';
 import { cilLockLocked, cilUser } from '@coreui/icons';
 import logo from '../../../assets/Boss4 Student logo_1.png';
 
-const Login = () => {
+const UserLogin = () => {
   const navigate = useNavigate();
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
@@ -121,7 +121,6 @@ const Login = () => {
                   </CForm>
                 </CCardBody>
               </CCard>
-
               <CCard
                 className="text-white py-5 d-flex justify-content-center align-items-center"
                 style={{ width: '44%', backgroundColor: '#C8FFBC', height: '350px' }}
@@ -137,4 +136,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default UserLogin;

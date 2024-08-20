@@ -1,0 +1,85 @@
+/* Styling for the chat container */
+.chat-card {
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+/* Styling for the card body */
+.chat-card-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 0;
+}
+
+/* Container for chat messages */
+.chat-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  height: 400px;
+  overflow-y: auto;
+  padding: 10px;
+  background-color: #f2f2f2;
+}
+
+/* Individual chat message */
+.chat-message {
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  max-width: 70%;
+  word-wrap: break-word;
+  display: flex;
+  flex-direction: column;
+}
+
+/* User message styling */
+.chat-message.user {
+  background-color: #d1e7dd; /* Light green background */
+  align-self: flex-start; /* Align user messages to the left */
+  text-align: left;
+  border-radius: 10px 10px 10px 0; /* Rounded corners on the left */
+}
+
+/* Admin message styling */
+.chat-message.admin {
+  background-color: #f8d7da; /* Light red background */
+  align-self: flex-end; /* Align admin messages to the right */
+  text-align: right;
+  border-radius: 10px 10px 0 10px; /* Rounded corners on the right */
+}
+
+/* Message content styling */
+.message-content {
+  padding: 10px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+  word-wrap: break-word;
+}
+
+/* Form styling */
+.chat-form {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
+/* Input group styling */
+.chat-input-group {
+  flex-grow: 1;
+  margin-right: 10px;
+}
+
+/* Input field styling */
+.chat-input {
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+}
+
+/* Send button styling */
+.chat-send-button {
+  border-radius: 10px;
+}

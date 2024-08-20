@@ -453,9 +453,9 @@ const ApplicationDetails = () => {
                   </CardBody>
                 </Card>
               </Col>
-              {/* <Col md="6">
-                <ChatComponent />
-              </Col> */}
+               <Col md="6">
+               <ChatComponent applicationId={appId} />
+              </Col> 
             </Row>
           </div>
         );
