@@ -1,49 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-const ChatComponent = ({ applicationId }) => {
+const UserChat = ({ applicationId }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [unreadMessages, setUnreadMessages] = useState(0); // To track unread messages
+  const [unreadMessages, setUnreadMessages] = useState(0);
 
   useEffect(() => {
-    // Fetch messages when the component mounts
     const getMessages = async () => {
       try {
         const response = await axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats/${applicationId}`);
-        setMessages(response.data);
+        setMessages(response.data.messages || []);
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     };
 
     getMessages();
-
-    // Set up polling for new messages every 10 seconds
-    const intervalId = setInterval(async () => {
+    
+    const interval = setInterval(async () => {
       try {
         const response = await axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats/${applicationId}`);
-        if (response.data.length > messages.length) {
-          setUnreadMessages(response.data.length - messages.length); // Update unread messages count
-          setMessages(response.data);
-          // Show notification if new message arrives
-          new Notification('New message received');
+        const newMessages = response.data.messages || [];
+
+        if (newMessages.length > messages.length) {
+          const latestMessage = newMessages[newMessages.length - 1];
+          if (latestMessage.sender !== 'user') {
+            toast.info('New message received!');
+          }
+          setMessages(newMessages);
+          setUnreadMessages(newMessages.length - messages.length);
         }
       } catch (error) {
-        console.error('Error polling for messages:', error);
+        console.error('Error fetching messages:', error);
       }
-    }, 10000); // Poll every 10 seconds
+    }, 5000);
 
-    // Clear the interval when the component unmounts
-    return () => clearInterval(intervalId);
+    return () => clearInterval(interval);
   }, [applicationId, messages]);
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;
 
     try {
-      await axios.post('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats', {
+      await axios.post(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats`, {
         applicationId,
         sender: 'user',
         content: newMessage,
@@ -58,6 +61,8 @@ const ChatComponent = ({ applicationId }) => {
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
+      <ToastContainer />
+      <h3>User Chat</h3>
       {unreadMessages > 0 && <div>You have {unreadMessages} new messages!</div>}
       <div style={{ height: '300px', overflowY: 'auto', borderBottom: '1px solid #ddd', marginBottom: '10px', padding: '10px' }}>
         {messages.map((msg, index) => (
@@ -90,8 +95,8 @@ const ChatComponent = ({ applicationId }) => {
   );
 };
 
-ChatComponent.propTypes = {
+UserChat.propTypes = {
   applicationId: PropTypes.string.isRequired,
 };
 
-export default ChatComponent;
+export default UserChat;

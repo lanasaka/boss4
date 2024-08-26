@@ -34,7 +34,7 @@ const UserLogin = () => {
       toast.error('Please enter both username and password');
       return;
     }
-
+  
     try {
       const response = await fetch('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/users/subset', {
         method: 'GET',
@@ -42,33 +42,34 @@ const UserLogin = () => {
           'Content-Type': 'application/json',
         },
       });
-
+  
       if (response.ok) {
         const users = await response.json();
         const user = users.find(user => user.name === name && user.password === password);
-
+  
         if (user) {
-          localStorage.setItem('userId', user.id); // Store the user ID in local storage
-          localStorage.setItem('userName', user.name); // Store the user name in local storage
-          localStorage.setItem('userEmail', user.email); // Store the user email in local storage
-          localStorage.setItem('userRole', user.role); // Store the user role in local storage
-          localStorage.setItem('userCompany', user.company); // Store the user company in local storage
-          
-          console.log('Logged in user ID:', user.id); // Log the user ID
+          localStorage.setItem('userId', user.id);
+          localStorage.setItem('userName', user.name);
+          localStorage.setItem('userEmail', user.email); // Ensure this field exists
+          localStorage.setItem('userRole', user.role); // Ensure this field exists
+          localStorage.setItem('userCompany', user.company); // Ensure this field exists
+  
+          console.log('Logged in user ID:', user.id);
           toast.success('Login successful');
           navigate('/dashboard');
         } else {
           toast.error('Invalid username or password');
         }
       } else {
-        toast.error('Invalid username or password');
+        toast.error('Failed to fetch users');
       }
     } catch (error) {
       console.error('Error during login:', error);
       toast.error('An error occurred during login');
     }
   };
-
+  
+  
   return (
     <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
       <CContainer>
