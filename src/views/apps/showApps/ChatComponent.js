@@ -1,58 +1,61 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 
 const UserChat = ({ applicationId }) => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
-  const [unreadMessages, setUnreadMessages] = useState(0);
+  const [notification, setNotification] = useState('');
 
   useEffect(() => {
     const getMessages = async () => {
       try {
         const response = await axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats/${applicationId}`);
-        setMessages(response.data.messages || []);
+        if (response.data && Array.isArray(response.data.messages)) {
+          const newMessages = response.data.messages;
+          setMessages(newMessages);
+
+          // Mark messages as read on the server
+          const unreadMessages = newMessages.filter(msg => !msg.read && msg.sender !== 'user');
+          await Promise.all(unreadMessages.map(async (msg) => {
+            await axios.put(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats/read/${msg.id}`);
+          }));
+        } else {
+          console.error('API response is not an array:', response.data);
+          setMessages([]);
+        }
       } catch (error) {
         console.error('Error fetching messages:', error);
       }
     };
 
     getMessages();
-    
-    const interval = setInterval(async () => {
-      try {
-        const response = await axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats/${applicationId}`);
-        const newMessages = response.data.messages || [];
 
-        if (newMessages.length > messages.length) {
-          const latestMessage = newMessages[newMessages.length - 1];
-          if (latestMessage.sender !== 'user') {
-            toast.info('New message received!');
-          }
-          setMessages(newMessages);
-          setUnreadMessages(newMessages.length - messages.length);
-        }
-      } catch (error) {
-        console.error('Error fetching messages:', error);
-      }
-    }, 5000);
+    const interval = setInterval(getMessages, 5000);
 
     return () => clearInterval(interval);
-  }, [applicationId, messages]);
+  }, [applicationId]);
+
+  useEffect(() => {
+    const latestMessage = messages[messages.length - 1];
+    if (latestMessage && latestMessage.sender === 'admin') {
+      setNotification('New message from admin!');
+    } else {
+      setNotification('');
+    }
+  }, [messages]);
 
   const handleSend = async () => {
     if (!newMessage.trim()) return;
 
     try {
-      await axios.post(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats`, {
+      const response = await axios.post(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/chats`, {
         applicationId,
         sender: 'user',
         content: newMessage,
       });
 
-      setMessages([...messages, { content: newMessage, sender: 'user' }]);
+      setMessages([...messages, response.data]);
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
@@ -61,9 +64,6 @@ const UserChat = ({ applicationId }) => {
 
   return (
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '10px', border: '1px solid #ddd', borderRadius: '5px' }}>
-      <ToastContainer />
-      <h3>User Chat</h3>
-      {unreadMessages > 0 && <div>You have {unreadMessages} new messages!</div>}
       <div style={{ height: '300px', overflowY: 'auto', borderBottom: '1px solid #ddd', marginBottom: '10px', padding: '10px' }}>
         {messages.map((msg, index) => (
           <div key={index} style={{ display: 'flex', flexDirection: 'column', alignItems: msg.sender === 'user' ? 'flex-end' : 'flex-start', marginBottom: '10px' }}>
@@ -76,6 +76,7 @@ const UserChat = ({ applicationId }) => {
           </div>
         ))}
       </div>
+
       <div style={{ display: 'flex', alignItems: 'center' }}>
         <input
           type="text"
@@ -91,6 +92,7 @@ const UserChat = ({ applicationId }) => {
           Send
         </button>
       </div>
+
     </div>
   );
 };
