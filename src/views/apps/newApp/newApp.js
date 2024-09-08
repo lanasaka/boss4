@@ -28,10 +28,15 @@ const NewApp = () => {
     highSchoolTranscript: null,
     highSchoolTranscriptEnglish: null,
     extraFile: null,
-    extraFileName: ''
+    extraFileName: '',
+    applicationCode: '' 
+    
   });
 
   const [activeTab, setActiveTab] = useState('personal');
+  const generateApplicationCode = () => {
+    return `#ST-${Date.now()}`; // Simple example: timestamp-based code
+  };
 
   // Function to handle file changes
   const handleFileChange = (event, fieldName) => {
@@ -74,11 +79,12 @@ const NewApp = () => {
   
   const handleApplicationSubmit = async () => {
     try {
+      const applicationCode = generateApplicationCode();
       const formDataToSend = new FormData();
       for (const key in formData) {
         formDataToSend.append(key, formData[key]);
       }
-  
+      formDataToSend.append('applicationCode', applicationCode);
       const userId = localStorage.getItem('userId');
       const userName = localStorage.getItem('userName');
       if (!userId || !userName) {
@@ -91,6 +97,10 @@ const NewApp = () => {
       const response = await Axios.post('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications', formDataToSend);
       const { id } = response.data;
       setApplicationId(id);
+      setFormData({
+        ...formData,
+        applicationCode // Set application code in form data state
+      });
       alert('Application submitted successfully!');
       goToUniversityTab();
     } catch (error) {
@@ -111,12 +121,13 @@ const NewApp = () => {
       }
   
       const dataToSend = {
-        application_id: applicationId,
+        application_id: applicationId, // Ensure applicationId is included
         academic_degree: formData.academicDegree,
         university: formData.university,
-        program: formData.program
+        program: formData.program,
+        application_code: formData.applicationCode // Include application code
       };
-  
+
       await Axios.post('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/application-details', dataToSend, {
         headers: {
           'Content-Type': 'application/json'

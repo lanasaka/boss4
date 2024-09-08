@@ -10,7 +10,7 @@ export const NotificationProvider = ({ children }) => {
   const fetchApplicationName = async (applicationId) => {
     try {
       const response = await axios.get(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications/${applicationId}`);
-      return response.data.name || 'Unknown Application';
+      return response.data.applicationCode || 'Unknown Application';
     } catch (error) {
       console.error('Error fetching application name:', error);
       return 'Unknown Application';
@@ -34,13 +34,13 @@ export const NotificationProvider = ({ children }) => {
       const adminMessages = data.messages.filter(message => message.sender === 'admin' && message.isRead === 0);
       
       const notificationsWithAppName = await Promise.all(adminMessages.map(async (message) => {
-        const applicationName = await fetchApplicationName(message.applicationId);
+        const applicationCode = await fetchApplicationName(message.applicationId);
         return {
           message: message.content || 'No message content',
           messageId: message.id,
           sender: message.sender,
           applicationId: message.applicationId,
-          applicationName,
+          applicationCode,
           read: message.isRead === 1,
         };
       }));

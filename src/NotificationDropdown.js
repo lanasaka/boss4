@@ -83,7 +83,7 @@ const NotificationDropdown = ({ isOpen, toggleDropdown }) => {
               <CDropdownItem
                 style={{ padding: '10px 15px', backgroundColor: 'transparent' }}
               >
-                {notif.message || 'No message content'} in ({notif.applicationName})
+                {'New message ' || 'No message content'} in ({notif.applicationCode})
               </CDropdownItem>
             </Link>
           ))

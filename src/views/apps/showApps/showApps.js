@@ -140,10 +140,10 @@ const ShowApps = () => {
         <thead>
           <tr>
             <th>#</th>
+            <th>Application Code</th>
             <th>Name</th>
             <th>Nationality</th>
             <th>Email</th>
-         
             <th>Semester</th>
             <th>Application Type</th>
             <th>Actions</th>
@@ -157,10 +157,10 @@ const ShowApps = () => {
               return (
                 <tr key={id}>
                   <th scope="row">{index + 1}</th>
+                  <td>{app.applicationCode}</td>
                   <td>{name}</td>
                   <td>{nationality}</td>
                   <td>{email}</td>
-             
                   <td>{semester}</td>
                   <td>
                 <Button color={getButtonConfig(app).color} size="md">{getButtonConfig(app).text}</Button>

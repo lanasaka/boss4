@@ -18,7 +18,7 @@ const ApplicationDetails = () => {
   const [files, setFiles] = useState([]);
   const [otherFile, setOtherFile] = useState(null);
   const [otherFileName, setOtherFileName] = useState('');
-  
+  const [applicationCode, setApplicationCode] = useState('');
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -191,7 +191,7 @@ const ApplicationDetails = () => {
         fetchFinalLetters(); // Fetch offer letters after fetching application details
         setApplication(data);
         fetchAcademicDetails(); // Fetch academic details based on appId
-
+        setApplicationCode(data.applicationCode || '');
         setName(data.name || '');
         setPassportNumber(data.passportNumber || '');
         setEmail(data.email || '');
@@ -411,7 +411,10 @@ const ApplicationDetails = () => {
                   <CardBody>
                     <h4 className="card-title">{Name}</h4>
                     <Form>
-                   
+                    <FormGroup>
+                        <Label for="applicationCode">Application Code:</Label>
+                        <p>{applicationCode}</p>
+                      </FormGroup>
                       <FormGroup>
                         <Label for="name">Student First Name + Father Name + Last Name :</Label>
                         <p>{Name}</p>
