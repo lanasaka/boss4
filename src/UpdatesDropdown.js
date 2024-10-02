@@ -13,24 +13,63 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
-  const { updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges, markAppTypeChangeAsRead } = useUpdate();
+  const {
+    updates,
+    unseenFiles,
+    unseenOfferLetters,
+    unseenFinalLetters,
+    appTypeChanges,
+    markAppTypeChangeAsRead,
+    setAppTypeChanges,
+    setUnseenFiles,
+    setUnseenOfferLetters,
+    setUnseenFinalLetters,
+  } = useUpdate();
 
   const notificationCount = updates.filter((notif) => !notif.read && notif.sender === 'user').length;
   const unseenFileCount = unseenFiles.length;
   const unseenOfferLetterCount = unseenOfferLetters.length;
   const unseenFinalLetterCount = unseenFinalLetters.length;
 
-  const handleNotificationClick = (messageId) => {
-    toggleDropdown();
+  const handleNotificationClick = (id, type) => {
+    if (type === 'appTypeChange') {
+      removeNotification(id, 'appTypeChanges');
+    } else if (type === 'file') {
+      removeNotification(id, 'unseenFiles');
+    } else if (type === 'offerLetter') {
+      removeNotification(id, 'unseenOfferLetters');
+    } else if (type === 'finalLetter') {
+      removeNotification(id, 'unseenFinalLetters');
+    }
+    toggleDropdown(); // Close the dropdown after clicking
   };
 
-  const handleNotificationClick2 = (changeId) => {
-    // Mark the application type change as read
-    markAppTypeChangeAsRead(changeId);
-
-    // Optional: Remove the change from the visible list
-    toggleDropdown();
+  const removeNotification = (id, type) => {
+    switch (type) {
+      case 'appTypeChanges':
+        setAppTypeChanges((prev) => prev.filter(change => change.id !== id));
+        break;
+      case 'unseenFiles':
+        setUnseenFiles((prev) => prev.filter(file => file.id !== id));
+        break;
+      case 'unseenOfferLetters':
+        setUnseenOfferLetters((prev) => prev.filter(letter => letter.id !== id));
+        break;
+      case 'unseenFinalLetters':
+        setUnseenFinalLetters((prev) => prev.filter(letter => letter.id !== id));
+        break;
+      default:
+        break;
+    }
   };
+
+  // Check if there are any updates
+  const hasUpdates =
+    notificationCount > 0 ||
+    unseenFileCount > 0 ||
+    unseenOfferLetterCount > 0 ||
+    unseenFinalLetterCount > 0 ||
+    appTypeChanges.length > 0;
 
   return (
     <CDropdown variant="nav-item" show={isOpen} toggle={toggleDropdown}>
@@ -63,61 +102,83 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
         )}
         <CIcon icon={cilBell} size="lg" className="text-gray-700 ml-8" />
       </CDropdownToggle>
+
       <CDropdownMenu className="dropdown-menu-right">
-        {appTypeChanges.length > 0 && (
+      <CDropdownHeader>Updates</CDropdownHeader>
+        {hasUpdates ? (
           <>
-            <CDropdownHeader>Application Status Changes</CDropdownHeader>
-            {appTypeChanges.map((change) => (
-              <CDropdownItem key={change.id}>
-                <Link 
-                  to={`/apps/${change.id}`} 
-                  className="dropdown-item" 
-                  onClick={() => handleNotificationClick(change.id)} // Call the function with the change id
-                >
-                  Application ({change.applicationCode}) status updated
-                </Link>
-              </CDropdownItem>
-            ))}
-          </>
-        )}
+            {appTypeChanges.length > 0 && (
+              <>
+                <CDropdownHeader>Application Status Changes</CDropdownHeader>
+                {appTypeChanges.map((change) => (
+                  <CDropdownItem key={change.id}>
+                    <Link
+                      to={`/apps/${change.id}`}
+                      className="dropdown-item"
+                      onClick={() => handleNotificationClick(change.id, 'appTypeChange')}
+                    >
+                      Application ({change.applicationCode}) status updated
+                    </Link>
+                  </CDropdownItem>
+                ))}
+              </>
+            )}
 
-        {unseenFiles.length > 0 && (
-          <>
-            <CDropdownHeader>Unseen Files</CDropdownHeader>
-            {unseenFiles.map((file) => (
-              <CDropdownItem key={file.id}>
-                <Link to={`/apps/${file.applicationId}`} className="dropdown-item" onClick={() => handleNotificationClick(file.id)}>
-                  New file uploaded in ({file.applicationCode})
-                </Link>
-              </CDropdownItem>
-            ))}
-          </>
-        )}
+            {unseenFiles.length > 0 && (
+              <>
+                <CDropdownHeader>Unseen Files</CDropdownHeader>
+                {unseenFiles.map((file) => (
+                  <CDropdownItem key={file.id}>
+                    <Link
+                      to={`/apps/${file.applicationId}`}
+                      className="dropdown-item"
+                      onClick={() => handleNotificationClick(file.id, 'file')}
+                    >
+                      New file uploaded in ({file.applicationCode})
+                    </Link>
+                  </CDropdownItem>
+                ))}
+              </>
+            )}
 
-        {unseenOfferLetters.length > 0 && (
-          <>
-            <CDropdownHeader>Unseen Offer Letters</CDropdownHeader>
-            {unseenOfferLetters.map((letter) => (
-              <CDropdownItem key={letter.id}>
-                <Link to={`/apps/${letter.applicationId}`} className="dropdown-item" onClick={() => handleNotificationClick(letter.id)}>
-                  New Initial Acceptance in ({letter.applicationCode})
-                </Link>
-              </CDropdownItem>
-            ))}
-          </>
-        )}
+            {unseenOfferLetters.length > 0 && (
+              <>
+                <CDropdownHeader>Unseen Offer Letters</CDropdownHeader>
+                {unseenOfferLetters.map((letter) => (
+                  <CDropdownItem key={letter.id}>
+                    <Link
+                      to={`/apps/${letter.applicationId}`}
+                      className="dropdown-item"
+                      onClick={() => handleNotificationClick(letter.id, 'offerLetter')}
+                    >
+                      New Initial Acceptance in ({letter.applicationCode})
+                    </Link>
+                  </CDropdownItem>
+                ))}
+              </>
+            )}
+           
 
-        {unseenFinalLetters.length > 0 && (
-          <>
-            <CDropdownHeader>Unseen Final Letters</CDropdownHeader>
-            {unseenFinalLetters.map((letter) => (
-              <CDropdownItem key={letter.id}>
-                <Link to={`/apps/${letter.applicationId}`} className="dropdown-item" onClick={() => handleNotificationClick(letter.id)}>
-                  New Final Acceptance in ({letter.applicationCode})
-                </Link>
-              </CDropdownItem>
-            ))}
+            {unseenFinalLetters.length > 0 && (
+              <>
+                <CDropdownHeader>Unseen Final Letters</CDropdownHeader>
+                {unseenFinalLetters.map((letter) => (
+                  <CDropdownItem key={letter.id}>
+                    <Link
+                      to={`/apps/${letter.applicationId}`}
+                      className="dropdown-item"
+                      onClick={() => handleNotificationClick(letter.id, 'finalLetter')}
+                    >
+                      New Final Acceptance in ({letter.applicationCode})
+                    </Link>
+                  </CDropdownItem>
+                ))}
+              </>
+            )}
           </>
+        ) : (
+          // When there are no updates
+          <CDropdownHeader>No Updates</CDropdownHeader>
         )}
       </CDropdownMenu>
     </CDropdown>

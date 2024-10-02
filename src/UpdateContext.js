@@ -147,11 +147,25 @@ export const UpdateProvider = ({ children }) => {
     );
   };
 
-  return (
-    <UpdateContext.Provider value={{ updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges, markAppTypeChangeAsRead }}>
-      {children}
-    </UpdateContext.Provider>
-  );
+return (
+  <UpdateContext.Provider
+    value={{
+      updates,
+      unseenFiles,
+      setUnseenFiles,
+      unseenOfferLetters,
+      setUnseenOfferLetters,
+      unseenFinalLetters,
+      setUnseenFinalLetters,
+      appTypeChanges,
+      setAppTypeChanges,
+      markAppTypeChangeAsRead,
+    }}
+  >
+    {children}
+  </UpdateContext.Provider>
+);
+
 };
 
 UpdateProvider.propTypes = {
