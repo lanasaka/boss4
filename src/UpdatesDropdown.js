@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
-  const { updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges } = useUpdate();
+  const { updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges, setAppTypeChanges } = useUpdate();
 
   const notificationCount = updates.filter((notif) => !notif.read && notif.sender === 'user').length;
   const unseenFileCount = unseenFiles.length;
@@ -23,14 +23,14 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
   const handleNotificationClick = (messageId) => {
     toggleDropdown();
   };
+
   const handleNotificationClick2 = (changeId) => {
     // Remove the clicked change from the appTypeChanges
     setAppTypeChanges((prevChanges) => prevChanges.filter((change) => change.id !== changeId));
-  
+    
     // Optionally toggle the dropdown if you want it to close
     toggleDropdown();
   };
-  
 
   return (
     <CDropdown variant="nav-item" show={isOpen} toggle={toggleDropdown}>
@@ -64,23 +64,22 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
         <CIcon icon={cilBell} size="lg" className="text-gray-700 ml-8" />
       </CDropdownToggle>
       <CDropdownMenu className="dropdown-menu-right">
-      {appTypeChanges.length > 0 && (
-  <>
-    <CDropdownHeader>Application Status Changes</CDropdownHeader>
-    {appTypeChanges.map((change) => (
-      <CDropdownItem key={change.id}>
-        <Link 
-          to={`/apps/${change.id}`} 
-          className="dropdown-item" 
-          onClick={() => handleNotificationClick2(change.id)}  // Call the function with the change id
-        >
-          Application ({change.applicationCode}) status updated
-        </Link>
-      </CDropdownItem>
-    ))}
-  </>
-)}
-
+        {appTypeChanges.length > 0 && (
+          <>
+            <CDropdownHeader>Application Status Changes</CDropdownHeader>
+            {appTypeChanges.map((change) => (
+              <CDropdownItem key={change.id}>
+                <Link 
+                  to={`/apps/${change.id}`} 
+                  className="dropdown-item" 
+                  onClick={() => handleNotificationClick2(change.id)}  // Call the function with the change id
+                >
+                  Application ({change.applicationCode}) status updated
+                </Link>
+              </CDropdownItem>
+            ))}
+          </>
+        )}
 
         {unseenFiles.length > 0 && (
           <>
