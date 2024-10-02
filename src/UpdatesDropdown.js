@@ -56,18 +56,22 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
         <CIcon icon={cilBell} size="lg" className="text-gray-700 ml-8" />
       </CDropdownToggle>
       <CDropdownMenu className="dropdown-menu-right">
-        {appTypeChanges.length > 0 && (
-          <>
-            <CDropdownHeader>Application Status Changes</CDropdownHeader>
-            {appTypeChanges.map((change) => (
-              <CDropdownItem key={change.id}>
-                <Link to={`/apps/${change.applicationId}`} className="dropdown-item" onClick={() => handleNotificationClick(change.id)}>
-                  Application ({change.applicationCode}) status updated
-                </Link>
-              </CDropdownItem>
-            ))}
-          </>
-        )}
+      {appTypeChanges.length > 0 && (
+  <>
+    <CDropdownHeader>Application Status Changes</CDropdownHeader>
+    {appTypeChanges.map((change) => (
+      <CDropdownItem key={change.id}>
+        <Link 
+          to={`/apps/${change.id}`}  // Using change.id if that's what you have in appTypeChanges
+          className="dropdown-item" 
+          onClick={() => handleNotificationClick(change.id)}
+        >
+          Application ({change.applicationCode}) status updated
+        </Link>
+      </CDropdownItem>
+    ))}
+  </>
+)}
 
         {unseenFiles.length > 0 && (
           <>
