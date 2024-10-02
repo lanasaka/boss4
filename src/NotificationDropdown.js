@@ -7,7 +7,7 @@ import {
   CDropdownMenu,
   CDropdownToggle,
 } from '@coreui/react';
-import { cilBell } from '@coreui/icons';
+import {cilEnvelopeClosed} from '@coreui/icons';
 import CIcon from '@coreui/icons-react';
 import { useNotification } from './NotficationContext'; 
 import { Link } from 'react-router-dom';
@@ -63,7 +63,7 @@ const NotificationDropdown = ({ isOpen, toggleDropdown }) => {
             {notificationCount}
           </span>
         )}
-        <CIcon icon={cilBell} size="lg" className="text-gray-700 ml-8" />
+        <CIcon icon={cilEnvelopeClosed} size="lg" className="text-gray-700 ml-8" />
       </CDropdownToggle>
       <CDropdownMenu className="dropdown-menu-right">
         <CDropdownHeader>Notifications</CDropdownHeader>

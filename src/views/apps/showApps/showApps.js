@@ -17,9 +17,15 @@ const ShowApps = () => {
       if (!userId) {
         throw new Error('User ID not found');
       }
-
+  
       const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications?userId=${userId}`);
       const data = await response.json();
+      
+      // Log appType values for each application
+      data.forEach(app => {
+        console.log(`Application ID: ${app.id}, appType: ${app.appType}`);
+      });
+  
       setApplications(data);
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -28,7 +34,7 @@ const ShowApps = () => {
       setLoading(false);
     }
   };
-
+  
   useEffect(() => {
     fetchApplications();
   }, []);
@@ -109,7 +115,7 @@ const ShowApps = () => {
             <Col md={6}>
               <Row form>
                 <Col md={6} className="mb-3">
-                  <label className="mr-2">Filter by Application Type:</label>
+                  <label className="mr-2">Filter by Application Status:</label>
                   <Input
                     type="select"
                     value={applicationTypeFilter}
@@ -145,7 +151,7 @@ const ShowApps = () => {
             <th>Nationality</th>
             <th>Email</th>
             <th>Semester</th>
-            <th>Application Type</th>
+            <th>Application Status</th>
             <th>Actions</th>
           </tr>
         </thead>

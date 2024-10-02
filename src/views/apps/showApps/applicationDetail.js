@@ -67,6 +67,7 @@ const ApplicationDetails = () => {
     formData.append('file', otherFile);
     formData.append('application_id', appId);
     formData.append('file_name', otherFileName);
+    formData.append('sender', 'user'); // Automatically set sender to "user"
   
     try {
       const response = await fetch('https://boss4edu-a37be3e5a8d0.herokuapp.com/api/extra-file', {
@@ -84,6 +85,7 @@ const ApplicationDetails = () => {
       toast.error('Error uploading file. Please try again later.');
     }
   };
+  
   const deleteExtraFile = async (fileId, filePath) => {
     try {
       const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/extra-files/${fileId}`, {
@@ -254,7 +256,30 @@ const ApplicationDetails = () => {
     setFinalLetterName(file.name);
   };
 
+    const markAsSeen2 = async (fileId) => {
+    console.log(`Marking file ${fileId} as seen...`);
+    try {
+      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/extra-files/${fileId}/seen`, {
+        method: 'PUT',
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      console.log(`File ${fileId} marked as seen.`);
+    } catch (error) {
+      console.error('Error marking file as seen:', error);
+    }
+  };
   
+  useEffect(() => {
+    console.log('Files:', files); // Log files to check data
+    files.forEach((file) => {
+      if (file.sender === 'admin' && file.is_seen === 0) {
+        markAsSeen2(file.id);
+      }
+    });
+  }, [files]);
+   
   const updateAppType = async (newType) => {
     try {
       const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/applications/${appId}`, {
@@ -348,6 +373,50 @@ const ApplicationDetails = () => {
       setApplication({ ...application, [fieldName]: value });
     }
   };
+  const markAsSeen = async (letterId) => {
+    try {
+      await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/offer-letters/${letterId}/seen`, {
+        method: 'PUT',
+      });
+      console.log(`Offer letter ${letterId} marked as seen.`);
+    } catch (error) {
+      console.error('Error marking offer letter as seen:', error);
+    }
+  };
+
+  useEffect(() => {
+    // When the offer letters are loaded, mark them as seen
+    offerLetters.forEach((letter) => {
+      if (letter.is_seen === 0) {  // Check if it's not seen
+        markAsSeen(letter.id);     // Mark as seen
+      }
+    });
+  }, [offerLetters]);  // Trigger when offerLetters data is fetched or updated
+
+  const markAsSeen1 = async (letterId) => {
+    try {
+      const response = await fetch(`https://boss4edu-a37be3e5a8d0.herokuapp.com/api/final-letters/${letterId}/seen`, {
+        method: 'PUT',
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to mark letter as seen');
+      }
+  
+      console.log(`Final letter ${letterId} marked as seen.`);
+    } catch (error) {
+      console.error('Error marking final letter as seen:', error);
+    }
+  };
+  
+  useEffect(() => {
+    finalLetters.forEach((letter) => {
+      if (letter.is_seen === 0) {
+        markAsSeen1(letter.id);
+      }
+    });
+  }, [finalLetters]);
+  
 
   const downloadDocument = async (documentName) => {
     if (documentName && documentName !== 'null') {
