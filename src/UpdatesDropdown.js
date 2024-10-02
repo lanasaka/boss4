@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
-  const { updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges, setAppTypeChanges,markAppTypeChangeAsRead  } = useUpdate();
+  const { updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges, markAppTypeChangeAsRead } = useUpdate();
 
   const notificationCount = updates.filter((notif) => !notif.read && notif.sender === 'user').length;
   const unseenFileCount = unseenFiles.length;
@@ -23,15 +23,15 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
   const handleNotificationClick = (messageId) => {
     toggleDropdown();
   };
+
   const handleNotificationClick2 = (changeId) => {
     // Mark the application type change as read
     markAppTypeChangeAsRead(changeId);
-    
-    // Optional: Remove the change from the visible list (if you want)
-    // setAppTypeChanges(prevChanges => prevChanges.filter(change => change.id !== changeId));
-    
+
+    // Optional: Remove the change from the visible list
     toggleDropdown();
   };
+
   return (
     <CDropdown variant="nav-item" show={isOpen} toggle={toggleDropdown}>
       <CDropdownToggle
@@ -72,7 +72,7 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
                 <Link 
                   to={`/apps/${change.id}`} 
                   className="dropdown-item" 
-                  onClick={() => handleNotificationClick2(change.id)}  // Call the function with the change id
+                  onClick={() => handleNotificationClick2(change.id)} // Call the function with the change id
                 >
                   Application ({change.applicationCode}) status updated
                 </Link>
