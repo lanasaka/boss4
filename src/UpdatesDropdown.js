@@ -72,7 +72,7 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
                 <Link 
                   to={`/apps/${change.id}`} 
                   className="dropdown-item" 
-                  onClick={() => handleNotificationClick2(change.id)} // Call the function with the change id
+                  onClick={() => handleNotificationClick(change.id)} // Call the function with the change id
                 >
                   Application ({change.applicationCode}) status updated
                 </Link>
