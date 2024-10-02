@@ -109,7 +109,7 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
           <>
             {appTypeChanges.length > 0 && (
               <>
-                <CDropdownHeader>Application Status Changes</CDropdownHeader>
+             
                 {appTypeChanges.map((change) => (
                   <CDropdownItem key={change.id}>
                     <Link
@@ -126,7 +126,7 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
 
             {unseenFiles.length > 0 && (
               <>
-                <CDropdownHeader>Unseen Files</CDropdownHeader>
+             
                 {unseenFiles.map((file) => (
                   <CDropdownItem key={file.id}>
                     <Link
@@ -143,7 +143,7 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
 
             {unseenOfferLetters.length > 0 && (
               <>
-                <CDropdownHeader>Unseen Offer Letters</CDropdownHeader>
+              
                 {unseenOfferLetters.map((letter) => (
                   <CDropdownItem key={letter.id}>
                     <Link
@@ -161,7 +161,7 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
 
             {unseenFinalLetters.length > 0 && (
               <>
-                <CDropdownHeader>Unseen Final Letters</CDropdownHeader>
+         
                 {unseenFinalLetters.map((letter) => (
                   <CDropdownItem key={letter.id}>
                     <Link
