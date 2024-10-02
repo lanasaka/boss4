@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
-  const { updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges, setAppTypeChanges } = useUpdate();
+  const { updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges, setAppTypeChanges,markAppTypeChangeAsRead  } = useUpdate();
 
   const notificationCount = updates.filter((notif) => !notif.read && notif.sender === 'user').length;
   const unseenFileCount = unseenFiles.length;
