@@ -23,15 +23,15 @@ const UpdatesDropdown = ({ isOpen, toggleDropdown }) => {
   const handleNotificationClick = (messageId) => {
     toggleDropdown();
   };
-
   const handleNotificationClick2 = (changeId) => {
-    // Remove the clicked change from the appTypeChanges
-    setAppTypeChanges((prevChanges) => prevChanges.filter((change) => change.id !== changeId));
+    // Mark the application type change as read
+    markAppTypeChangeAsRead(changeId);
     
-    // Optionally toggle the dropdown if you want it to close
+    // Optional: Remove the change from the visible list (if you want)
+    // setAppTypeChanges(prevChanges => prevChanges.filter(change => change.id !== changeId));
+    
     toggleDropdown();
   };
-
   return (
     <CDropdown variant="nav-item" show={isOpen} toggle={toggleDropdown}>
       <CDropdownToggle

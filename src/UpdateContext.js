@@ -17,25 +17,25 @@ export const UpdateProvider = ({ children }) => {
       newApplications.map(async (newApp) => {
         const oldApp = applications.find((app) => app.id === newApp.id);
         if (oldApp && oldApp.appType !== newApp.appType) {
-          const applicationCode = await fetchApplicationName(newApp.id); // Fetch the application code
+          const applicationCode = await fetchApplicationName(newApp.id);
           return {
             id: newApp.id,
             oldType: oldApp.appType,
             newType: newApp.appType,
-            applicationCode, // Store the application code
+            applicationCode,
+            read: false, // Initialize as unread
           };
         }
         return null;
       })
     );
-  
-    // Filter out null values
+
     setAppTypeChanges((prevChanges) => [
       ...prevChanges,
       ...updatedChanges.filter((change) => change !== null),
     ]);
   };
-  
+
   useEffect(() => {
     const userId = localStorage.getItem('userId');
     if (userId) {
@@ -138,8 +138,17 @@ export const UpdateProvider = ({ children }) => {
     return () => clearInterval(intervalId);
   }, []);
 
+  // Function to mark an application type change as read
+  const markAppTypeChangeAsRead = (changeId) => {
+    setAppTypeChanges((prevChanges) =>
+      prevChanges.map((change) =>
+        change.id === changeId ? { ...change, read: true } : change
+      )
+    );
+  };
+
   return (
-    <UpdateContext.Provider value={{ updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges }}>
+    <UpdateContext.Provider value={{ updates, unseenFiles, unseenOfferLetters, unseenFinalLetters, appTypeChanges, markAppTypeChangeAsRead }}>
       {children}
     </UpdateContext.Provider>
   );
